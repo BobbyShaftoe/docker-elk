@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+
+  elasticsearch:
+    build: elasticsearch/
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /var/docker-compose/docker-elk/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - /var/docker-compose/docker-elk/volumes/logs/elasticsearch:/var/log
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx4g -Xms4g -Dio.netty.recycler.maxCapacityPerThread=0"
+    restart: always
+    networks:
+      - elk
+
+  logstash:
+    build: logstash/
+    volumes:
+      -  /var/docker-compose/docker-elk/volumes/logstash/config:/usr/share/logstash/config
+      -  /var/docker-compose/docker-elk/volumes/logstash/pipeline:/usr/share/logstash/pipeline
+      -  /var/docker-compose/docker-elk/volumes/logstash/home:/usr/share/logstash/home
+      -  /var/docker-compose/docker-elk/volumes/logstash/plugins:/usr/share/logstash/plugins
+      -  /var/docker-compose/docker-elk/volumes/logstash/data:/usr/share/logstash/data
+      -  /var/docker-compose/docker-elk/volumes/logstash/logs:/usr/share/logstash/logs
+    ports:
+      - "5010:5000"
+      - "5011:5001"
+      - "50111:50111"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build: kibana/
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config
+    ports:
+      - "5611:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+networks:
+
+  elk:
+    driver: bridge
