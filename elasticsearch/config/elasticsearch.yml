@@ -13,7 +13,7 @@ logger.level: debug
 # Details: https://github.com/elastic/elasticsearch/pull/17288
 discovery.zen.minimum_master_nodes: 1
 #discovery.zen.ping.multicast: false
-transport.type: local
+#transport.type: local
 
 ## Use single node discovery in order to disable production mode and avoid bootstrap checks
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
